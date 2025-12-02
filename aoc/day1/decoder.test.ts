@@ -9,19 +9,33 @@ describe("decoder", () => {
         25
     ])("when no input should return 0", (initial) => {
         const actual = new Decoder(initial).decode("");
-        expect(actual).toBe(0);
+        expect(actual.part1).toBe(0);
     });
 
     test.each([
         { initial: 5, commands: ["L5"], expected: 1 },
-        { initial: 5, commands: ["L5", "R5", "L5"], expected: 2 },
-        { initial: 5, commands: ["L105"], expected: 1 },
         { initial: 95, commands: ["R5"], expected: 1 },
+        { initial: 5, commands: ["L5", "R5", "L5"], expected: 2 },
         { initial: 95, commands: ["R5", "L5", "R5"], expected: 2 },
+        { initial: 5, commands: ["L105"], expected: 1 },
         { initial: 95, commands: ["R105"], expected: 1 },
-    ])("should return amount of a command points at 0", ({ initial, commands, expected }) => {
+    ])("$commands should be $expected", ({ initial, commands, expected }) => {
         const actual = new Decoder(initial).decode(commands);
-        expect(actual).toBe(expected);
+        expect(actual.part1).toBe(expected);
+    });
+
+    test.each([
+        { initial: 5, commands: ["L5"], expected: 1 },
+        { initial: 95, commands: ["R5"], expected: 1 },
+        { initial: 5, commands: ["L5", "R5", "L5"], expected: 2 },
+        { initial: 95, commands: ["R5", "L5", "R5"], expected: 2 },
+        { initial: 5, commands: ["L105"], expected: 2 },
+        { initial: 95, commands: ["R105"], expected: 2 },
+        { initial: 1, commands: ["L5"], expected: 1 },
+        { initial: 99, commands: ["R5"], expected: 1 }
+    ])("$commands should be $expected", ({ initial, commands, expected }) => {
+        const actual = new Decoder(initial).decode(commands);
+        expect(actual.part2).toBe(expected);
     });
 
     test.each([
