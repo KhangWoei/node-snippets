@@ -1,6 +1,7 @@
 type Result = {
     part1: number
     part2: number
+    part3: number
 }
 
 export class Validator {
@@ -9,7 +10,8 @@ export class Validator {
     constructor() {
         this._result = {
             part1: 0,
-            part2: 0
+            part2: 0,
+            part3: 0
         }
     }
 
@@ -21,8 +23,8 @@ export class Validator {
         return this._result;
     }
 
-    public validateRange(range: string): [number[], number[]] {
-        const result: [number[], number[]] = [[], []];
+    public validateRange(range: string): [number[], number[], number[]] {
+        const result: [number[], number[], number[]] = [[], [], []];
 
         const ranges = range.split("-").map(r => parseInt(r));
         Array.from({ length: (ranges[1] - ranges[0]) + 1 }, (_, index) => index + ranges[0]).forEach(id => {
@@ -34,6 +36,11 @@ export class Validator {
             if (this.isInvalid2(id)) {
                 this._result.part2 += id;
                 result[1].push(id);
+            }
+
+            if (this.isInvalid3(id)) {
+                this._result.part3 += id;
+                result[2].push(id);
             }
         });
 
@@ -75,6 +82,14 @@ export class Validator {
         }
 
         return false;
+    }
+
+    public isInvalid3(id: number): boolean {
+        var strId = id.toString();
+
+        var newString = strId.concat(strId);
+
+        return newString.slice(1, newString.length - 1).includes(strId);
     }
 }
 
