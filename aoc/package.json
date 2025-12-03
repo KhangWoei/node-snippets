@@ -2,7 +2,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "vitest"
+    "test": "vitest",
+    "benchmark": "vitest bench"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

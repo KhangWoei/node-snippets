@@ -37,4 +37,3 @@ describe("validator", () => {
         expect(result[1]).toEqual(expected);
     });
 })
-
