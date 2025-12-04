@@ -17,3 +17,4 @@ const result = await booster.boostAsync(file.readLines());
 
 console.log(result);
 process.exit(0);
+
