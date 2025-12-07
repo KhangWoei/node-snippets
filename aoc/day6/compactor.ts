@@ -1,5 +1,6 @@
 type Result = {
     part1: number
+    part2: number
 }
 
 export class Compactor {
@@ -7,7 +8,8 @@ export class Compactor {
 
     constructor() {
         this._result = {
-            part1: 0
+            part1: 0,
+            part2: 0
         }
     }
 
@@ -18,18 +20,37 @@ export class Compactor {
             .filter(op => !!op)
             .map(op => new Problem(op));
 
+        let max = 0;
         for (let rowIndex = 0; rowIndex < trash.length - 1; rowIndex++) {
+            max = Math.max(trash[rowIndex].length, max);
             const columns = trash[rowIndex]
                 .trimEnd()
                 .split(" ")
                 .filter(s => !!s);
 
             columns.forEach((c, colIndex) => {
-                problems[colIndex].add(parseInt(c));
+                problems[colIndex].add1(parseInt(c));
             });
         }
 
-        this._result.part1 = problems.reduce((acc, curr) => acc + curr.result, 0);
+        this._result.part1 = problems.reduce((acc, curr) => acc + curr.result.part1, 0);
+
+        let currentProblem = 0;
+        for (let colIndex = 0; colIndex < max; colIndex++) {
+            const cephalopodNumber = trash
+                .slice(0, trash.length - 1)
+                .map(t => t[colIndex])
+                .join("")
+
+            if (cephalopodNumber.trimEnd() === "") {
+                currentProblem++;
+                continue;
+            }
+
+            problems[currentProblem].add2(parseInt(cephalopodNumber));
+        }
+
+        this._result.part2 = problems.reduce((acc, curr) => acc + curr.result.part2, 0);
 
         return this._result;
     }
@@ -37,35 +58,57 @@ export class Compactor {
 
 class Problem {
     public operation: string;
-    public result: number;
+    public result: Result;
 
     constructor(operation: string) {
         this.operation = operation;
 
         switch (this.operation) {
             case "*":
-                this.result = 1;
+                this.result = {
+                    part1: 1,
+                    part2: 1
+                }
                 break;
             case "+":
-                this.result = 0;
+                this.result = {
+                    part1: 0,
+                    part2: 0
+                }
                 break;
             default:
                 throw new Error("Operation not recognized");
         }
     }
 
-    public add(input: number): number {
+    public add1(input: number): number {
         switch (this.operation) {
             case "*":
-                this.result *= input;
+                this.result.part1 *= input;
                 break;
             case "+":
-                this.result += input;
+                this.result.part1 += input;
                 break;
             default:
                 break;
         }
 
-        return this.result;
+        return this.result.part1;
+    }
+
+    // ¯\_(ツ)_/¯ 
+    public add2(input: number): number {
+        switch (this.operation) {
+            case "*":
+                this.result.part2 *= input;
+                break;
+            case "+":
+                this.result.part2 += input;
+                break;
+            default:
+                break;
+        }
+
+        return this.result.part2;
     }
 }
