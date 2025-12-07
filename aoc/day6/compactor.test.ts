@@ -2,12 +2,12 @@ import { describe, test, expect } from "vitest"
 import { Compactor } from "./compactor.js"
 
 describe("compactor", () => {
-    test("test", () => {
+    test("should return sum of the accumulated operation on each column", () => {
         const compactor = new Compactor();
         const input = [
             "123 328 51 64",
             "45 64 387 23",
-            "6 29 215 314",
+            "6 98 215 314",
             "* + * +"
         ]
 

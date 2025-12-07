@@ -12,7 +12,7 @@ const cleanPath = normalize(filePath.trim());
 const absolutePath = resolve(cleanPath);
 
 const file = await open(absolutePath);
-const trash = await file.readFile("utf8").then(f => f.split(EOL));
+const trash = await file.readFile("utf8").then(f => f.split(EOL).filter(s => !!s));
 
 const compactor = new Compactor();
 const result = compactor.compact(trash);
