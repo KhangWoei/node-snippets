@@ -1,5 +1,6 @@
 type Result = {
     part1: number
+    part2: number
 }
 
 export class IngrediantTester {
@@ -7,7 +8,8 @@ export class IngrediantTester {
 
     constructor() {
         this._result = {
-            part1: 0
+            part1: 0,
+            part2: 0
         }
     }
 
@@ -44,6 +46,8 @@ export class IngrediantTester {
             }
         }
 
+        this._result.part2 = freshIngrediantRanges.reduce((acc, curr) => acc + curr.length(), 0);
+
         return this._result;
     }
 }
@@ -64,6 +68,10 @@ class Range {
     public contains(input: number): boolean {
         const temp = input >= this.start && input <= this.end;
         return temp;
+    }
+
+    public length(): number {
+        return this.end - this.start + 1;
     }
 
     public static Combine(range1: Range, range2: Range) {

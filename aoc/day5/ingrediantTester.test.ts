@@ -8,6 +8,7 @@ describe("ingrediantTester", () => {
         const result = await tester.calculateFreshIngrediants(inputGenerator());
 
         expect(result.part1).toBe(3);
+        expect(result.part2).toBe(14);
 
         async function* inputGenerator(): AsyncGenerator<string> {
             yield "3-5";
