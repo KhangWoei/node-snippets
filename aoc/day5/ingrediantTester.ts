@@ -18,7 +18,7 @@ export class IngrediantTester {
         let buildingRange = true;
         for await (const line of input) {
             if (buildingRange) {
-                if (!!line) {
+                if (line) {
                     const parsedRange = line.split("-").map(r => parseInt(r));
                     let range = new Range(parsedRange[0], parsedRange[1]);
                     const newRanges = new Array<Range>();
