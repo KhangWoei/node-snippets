@@ -15,6 +15,13 @@ export class Sweeper {
         }
     }
 
+    /*
+    * Note: Can be improved by 
+    *       1. Keep track of "removed" items, call this visited or removed
+    *       2. Keep track of all items around "removed" items, call this a recheck queue
+    *       3. After the initial scan, only loop through the items that were adjacent to a "removed" item
+    *       4. Repeat until the recheck queue is empty
+    */
     public sweep(grid: Array<string>): Result {
         let firstScan = true;
         let rescanRequired = true;
