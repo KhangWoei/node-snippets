@@ -5,3 +5,4 @@ export function Counter() {
 
     return <button data-testid="counter" onClick={() => setCount((prev) => ++prev)}>{`count:${count}`}</button>
 }
+
