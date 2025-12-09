@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { useDebounce } from "../app/Debounce";
 
 describe("useDebounce", () => {
@@ -8,7 +8,8 @@ describe("useDebounce", () => {
     });
 
     afterEach(() => {
-        vi.restoreAllMocks();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     test("returns initial value immediately", () => {
@@ -18,16 +19,21 @@ describe("useDebounce", () => {
     });
 
     test("delays updating value", () => {
-        const { result, rerender } = renderHook(() => useDebounce("initial", 500));
+        const { result, rerender } = renderHook(
+            ({ value, delay }) => useDebounce(value, delay),
+            { initialProps: { value: "initial", delay: 500 } }
+        );
+
         expect(result.current).toBe("initial");
 
+        // Pass new props to rerender
         rerender({ value: "updated", delay: 500 });
         expect(result.current).toBe("initial");
 
-        vi.advanceTimersByTime(499);
+        act(() => { vi.advanceTimersByTime(499) });
         expect(result.current).toBe("initial");
 
-        vi.advanceTimersByTime(1);
+        act(() => { vi.advanceTimersByTime(1) });
         expect(result.current).toBe("updated");
     });
 
@@ -38,12 +44,12 @@ describe("useDebounce", () => {
         );
 
         rerender({ value: "second", delay: 500 });
-        vi.advanceTimersByTime(200);
+        act(() => vi.advanceTimersByTime(200));
         rerender({ value: "third", delay: 500 });
-        vi.advanceTimersByTime(200);
+        act(() => vi.advanceTimersByTime(200));
         rerender({ value: "fourth", delay: 500 });
         expect(result.current).toBe("first");
-        vi.advanceTimersByTime(500);
+        act(() => vi.advanceTimersByTime(500));
         expect(result.current).toBe("fourth");
     });
 });
