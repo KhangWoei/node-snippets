@@ -26,7 +26,7 @@ describe("splitter", () => {
 
         const result = splitter.split(input);
 
-        expect(result).toBe(21);
+        expect(result.part1).toBe(21);
     });
 });
 
