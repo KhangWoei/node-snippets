@@ -1,5 +1,6 @@
 type Result = {
     part1: number
+    part2: number
 }
 
 type Beam = "S" | "|";
@@ -9,7 +10,8 @@ export class Splitter {
 
     constructor() {
         this._result = {
-            part1: 0
+            part1: 0,
+            part2: 0
         }
     }
 
@@ -28,9 +30,9 @@ export class Splitter {
         const rows = map.length;
         const columns = map[0].length;
 
-        const beamTrack = new Array<boolean>(columns);
+        const beamTrack = new Array<number>(columns);
         for (var column = 0; column < columns; column++) {
-            beamTrack[column] = this.isBeam(map[0][column]);
+            beamTrack[column] = this.isBeam(map[0][column]) ? 1 : 0;
         }
 
         for (var row = 1; row < rows; row++) {
@@ -40,7 +42,6 @@ export class Splitter {
                 if (beamTrack[column]) {
                     if (currentRow[column] === "^") {
                         this._result.part1++;
-                        beamTrack[column] = false;
 
                         let left = column - 1;
                         while (left >= 0) {
@@ -48,7 +49,7 @@ export class Splitter {
                                 this._result.part1++;
                                 continue;
                             } else {
-                                beamTrack[left] = true;
+                                beamTrack[left] += beamTrack[column];
                                 break;
                             }
 
@@ -61,17 +62,20 @@ export class Splitter {
                                 this._result.part1++;
                                 continue;
                             } else {
-                                beamTrack[right] = true;
+                                beamTrack[right] += beamTrack[column];
                                 break;
                             }
 
                             right++;
                         }
+
+                        beamTrack[column] = 0;
                     }
                 }
             }
-
         }
+
+        this._result.part2 = beamTrack.reduce((acc, current) => acc += current, 0);
 
         return this._result;
 
