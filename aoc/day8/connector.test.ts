@@ -5,7 +5,6 @@ import { connect } from "http2";
 describe("Connector", () => {
 
     test("connect shoud return ordered pair of nearest neighbours", () => {
-
         const input = [
             "162, 817, 812",
             "57, 618, 57",
