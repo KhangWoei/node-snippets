@@ -1,75 +1,76 @@
-import { KDNode } from "./KDNode.js";
+import { KDNode } from "./kdnode.js";
 import { Point } from "./point.js";
 
 export class KDTree {
     public readonly _root: KDNode;
 
-    private constructor(root: KDNode) {
+    constructor(root: KDNode) {
         this._root = root;
     }
 
-    public static create(input: Array<Array<number>>): KDTree {
-        const root = this.createNode(input, 0);
+    public findNearestNeighbour(target: Point): Point {
+        const queued = new Set<KDNode>();
+        const stack = new Array<KDNode>();
 
-        if (root) {
-            return new KDTree(root);
+        let current: KDNode | null = this._root;
+
+        while (current) {
+            stack.push(current);
+            queued.add(current);
+
+            const axis: number = current.depth % 3;
+
+            current = target.getAxis(axis) < current.point.getAxis(axis)
+                ? current.left
+                : current.right;
         }
 
-        throw new Error("No suitable tree found");
-    }
+        let best: { node: KDNode, distance: number } | null = null;
+        while (stack.length > 0) {
+            const node = stack.pop()!;
 
-    private static createNode(input: Array<Array<number>>, depth: number = 0): KDNode | null {
-        if (input.length === 0) {
-            return null;
-        }
+            if (node.point.isSamePoint(target)) {
+                continue;
+            }
 
-        const axis = depth % input[0].length;
-        const medianIndex = Math.floor(input.length / 2);
+            const distance = node.point.getDistanceFrom(target);
 
-        const median = this.quickselect(input, 0, input.length - 1, medianIndex, axis);
+            if (!best || distance <= best.distance) {
+                best = { node: node, distance: distance };
+            }
 
-        const left = this.createNode(input.slice(0, medianIndex), depth + 1);
-        const right = this.createNode(input.slice(medianIndex + 1, input.length), depth + 1);
+            const axis = node.depth % 3;
+            const distanceToPlane = Math.abs(target.getAxis(axis) - node.point.getAxis(axis));
 
-        return new KDNode(median, left, right, depth);
-    }
+            if (distanceToPlane < best.distance) {
+                if (node.left && !queued.has(node.left)) {
+                    stack.push(node.left);
+                    queued.add(node.left);
+                }
 
-    private static quickselect(input: Array<Array<number>>, left: number, right: number, target: number, axis: number): Point {
-        if (left === right) {
-            const point = input[left];
-            return new Point(point[0], point[1], point[2]);
-        }
-
-        const pivotIndex = this.partition(input, left, right, axis);
-
-        if (target < pivotIndex) {
-            return this.quickselect(input, left, pivotIndex - 1, target, axis);
-        } else if (target > pivotIndex) {
-            return this.quickselect(input, pivotIndex + 1, right, target, axis);
-        }
-
-        const median = input[pivotIndex];
-        return new Point(median[0], median[1], median[2]);
-    }
-
-    private static partition(input: Array<Array<number>>, left: number, right: number, axis: number): number {
-        const pivot = input[right][axis];
-        let tracker = left;
-
-        for (let index = left; index < right; index++) {
-            if (input[index][axis] <= pivot) {
-                swap(tracker, index);
-                tracker++;
+                if (node.right && !queued.has(node.right)) {
+                    stack.push(node.right);
+                    queued.add(node.right);
+                }
             }
         }
 
-        swap(tracker, right);
-        return tracker;
-
-        function swap(l: number, r: number): void {
-            const temp = input[l];
-            input[l] = input[r];
-            input[r] = temp;
+        if (!best) {
+            throw new NoNearestNeighbourError("No valid neighbour found!");
         }
+
+        return best.node.point;
+    }
+
+    public render(): string {
+        return this._root.render();
+    }
+}
+
+export class NoNearestNeighbourError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = "NoNearestNeighbourError";
+        Object.setPrototypeOf(this, NoNearestNeighbourError.prototype);
     }
 }

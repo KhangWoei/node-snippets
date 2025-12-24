@@ -1,6 +1,5 @@
 import { describe, test, expect } from "vitest"
 import { Connector } from "../app/connector.js"
-import { connect } from "http2";
 
 describe("Connector", () => {
 
