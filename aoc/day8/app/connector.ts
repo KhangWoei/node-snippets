@@ -1,9 +1,8 @@
-import { KDTree } from "./kdtree.js"
-import { KDTreeFactory } from "./kdtree_factory.js"
 import { Point } from "./point.js"
 
 type Result = {
-    part1: 0
+    part1: 0,
+    part2: 0
 }
 
 type Pair = {
@@ -17,7 +16,8 @@ export class Connector {
 
     constructor() {
         this._result = {
-            part1: 0
+            part1: 0,
+            part2: 0
         }
     }
 
@@ -40,22 +40,19 @@ export class Connector {
                     distance: current.getDistanceFrom(points[j])
                 };
 
-                if (heap.length < limit) {
-                    heap.push(candidate);
-
-                    if (heap.length === limit) {
-                        heap.sort((a, b) => b.distance - a.distance);
-                    }
-                } else if (candidate.distance < heap[0].distance) {
-                    heap[0] = candidate;
-
-                    heap.sort((a, b) => b.distance - a.distance);
-                }
+                heap.push(candidate);
             }
         }
 
-        const circuits = this.buildCircuits(heap).sort((a, b) => b.size - a.size).slice(0, 3);
+        heap.sort((a, b) => a.distance - b.distance);
+
+        const circuits = this.buildCircuits(heap.slice(0, limit))
+            .sort((a, b) => b.size - a.size)
+            .slice(0, 3);
         this._result.part1 += circuits.reduce((acc, curr) => acc * curr.size, 1);
+
+        const linkingConnection = this.calculateLinkingConnection(heap, points.length);
+        this._result.part2 += linkingConnection.left.x * linkingConnection.right.x;
 
         return this._result;
     }
@@ -81,5 +78,32 @@ export class Connector {
         }
 
         return circuits;
+    }
+
+    private calculateLinkingConnection(connections: Array<Pair>, junctionBoxes: number): Pair {
+        let circuits = new Array<Set<Point>>();
+
+        for (const pair of connections) {
+            const matchingCircuit = circuits.filter(c => c.has(pair.left) || c.has(pair.right));
+
+            if (matchingCircuit.length === 0) {
+                circuits.push(new Set<Point>([pair.left, pair.right]));
+            } else {
+                const mergedCircuit = new Set([
+                    pair.left,
+                    pair.right,
+                    ...matchingCircuit.flatMap(c => [...c])
+                ]);
+
+                circuits = circuits.filter(c => !matchingCircuit.includes(c));
+                circuits.push(mergedCircuit);
+            }
+
+            if (circuits.length === 1 && circuits[0].size === junctionBoxes) {
+                return pair;
+            }
+        }
+
+        throw new Error("Unable to form a single circuit with all junction boxes");
     }
 }
