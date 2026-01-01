@@ -1,11 +1,30 @@
 import { KDNode } from "./kdnode.js";
 import { Point } from "./point.js";
 
-export class KDTree {
+export class KDTree implements Iterable<Point> {
     public readonly _root: KDNode;
 
     constructor(root: KDNode) {
         this._root = root;
+    }
+
+    *[Symbol.iterator](): Iterator<Point> {
+        const stack = new Array<KDNode>();
+        stack.push(this._root);
+
+        while (stack.length > 0) {
+            const node = stack.pop()!;
+
+            yield node.point;
+
+            if (node.left) {
+                stack.push(node.left);
+            }
+
+            if (node.right) {
+                stack.push(node.right);
+            }
+        }
     }
 
     public findNearestNeighbour(target: Point): Point {

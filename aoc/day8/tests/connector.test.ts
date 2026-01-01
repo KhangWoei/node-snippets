@@ -28,7 +28,7 @@ describe("Connector", () => {
         ];
         const connector = new Connector();
 
-        const result = connector.connect(input);
+        const result = connector.connect(input, 10);
 
         expect(result.part1).toBe(40);
     });

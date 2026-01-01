@@ -15,7 +15,7 @@ const file = await open(absolutePath);
 const map = await file.readFile("utf8").then(f => f.split(EOL).filter(s => !!s));
 
 const connector = new Connector();
-const result = connector.connect(map);
+const result = connector.connect(map, 1000);
 
 console.log(result);
 file.close();
