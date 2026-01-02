@@ -1,4 +1,7 @@
-import { machine } from "os";
+type State = {
+    indicators: Array<boolean>;
+    depth: number
+}
 
 export class Machine {
     public readonly indicators: Array<boolean>;
@@ -12,37 +15,63 @@ export class Machine {
     }
 
     public calculateOptimalConfiguration(): number {
-        return 0;
+        const queue: Array<State> = [
+            {
+                indicators: new Array(this.indicators.length).fill(false),
+                depth: 0,
+            }
+        ];
+        const visited = new Set<string>();
+        visited.add(JSON.stringify(queue[0].indicators));
+
+        while (queue.length > 0) {
+            const current = queue.shift()!;
+
+            if (this.sequenceEqual(current.indicators, this.indicators)) {
+                return current.depth;
+            }
+
+            for (const button of this.buttons) {
+                const newIndicators = this.switch(current.indicators, button);
+                const key = JSON.stringify(newIndicators);
+
+                if (visited.has(key)) {
+                    continue;
+                }
+
+                visited.add(key);
+                queue.push({
+                    indicators: newIndicators,
+                    depth: current.depth + 1
+                });
+            }
+        }
+
+        throw new Error("Unable to reach target state");
+    }
+
+    private switch(indicators: Array<boolean>, button: Array<number>): Array<boolean> {
+        const result = [...indicators];
+
+        for (const indicator of button) {
+            result[indicator] = !result[indicator]
+        }
+
+        return result;
+    }
+
+    private sequenceEqual<T>(left: Array<T>, right: Array<T>): boolean {
+        if (left.length != right.length) {
+            return false;
+        }
+
+        for (let i = 0; i < left.length; i++) {
+            if (left[i] !== right[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
-export class MachineBuilder {
-    private readonly _indicators: Array<boolean>;
-    private readonly _buttons: Array<Array<number>>;
-    private readonly _joltage: Array<number>;
-
-    constructor() {
-        this._indicators = new Array<boolean>();
-        this._buttons = new Array<Array<number>>();
-        this._joltage = new Array<number>();
-    }
-
-    public AddIndicator(active: boolean): MachineBuilder {
-        this._indicators.push(active);
-        return this;
-    }
-
-    public AddButtons(...buttons: number[]): MachineBuilder {
-        this._buttons.push(buttons);
-        return this;
-    }
-
-    public AddJoltage(joltage: number): MachineBuilder {
-        this._joltage.push(joltage);
-        return this;
-    }
-
-    public Build(): Machine {
-        return new Machine(this._indicators, this._buttons, this._joltage);
-    }
-}
