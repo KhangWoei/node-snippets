@@ -18,6 +18,24 @@ describe("theater", () => {
 
         const actual = theater.decorate(input);
 
-        expect(actual.part1).toEqual(50);
+        expect(actual).toEqual(50);
+    });
+
+    test("redGreenDecoration, largest area using example problem should be 24", () => {
+        const input = [
+            new Point(7, 1),
+            new Point(11, 1),
+            new Point(11, 7),
+            new Point(9, 7),
+            new Point(9, 5),
+            new Point(2, 5),
+            new Point(2, 3),
+            new Point(7, 3),
+        ]
+        const theater = new Theater();
+
+        const actual = theater.redGreenDecoration(input);
+
+        expect(actual).toEqual(24);
     });
 });

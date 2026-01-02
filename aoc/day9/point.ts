@@ -7,7 +7,7 @@ export class Point {
         this.y = y;
     }
 
-    public caclulateArea(other: Point): number {
+    public calculateArea(other: Point): number {
         return (Math.abs(other.x - this.x) + 1) * (Math.abs(other.y - this.y) + 1);
     }
 }

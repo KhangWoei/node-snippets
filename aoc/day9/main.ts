@@ -22,9 +22,11 @@ for await (const line of file.readLines()) {
 }
 
 const theater = new Theater();
-const result = theater.decorate(points);
+const part1 = theater.decorate(points);
+console.log(`part1: ${part1}`);
 
-console.log(result);
+const part2 = theater.redGreenDecoration(points);
+console.log(`part2: ${part2}`);
 file.close();
 process.exit(0);
 
