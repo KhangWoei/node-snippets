@@ -1,5 +1,4 @@
 import { describe, expect, test } from "vitest";
-import { Machine } from "./machine.js";
 import { MachineBuilder } from "./machineBuilder.js";
 
 describe("machine", () => {
